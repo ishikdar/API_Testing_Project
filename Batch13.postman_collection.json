@@ -1,0 +1,241 @@
+{
+	"info": {
+		"_postman_id": "7afd8e21-4ca4-4c1e-aadd-fa654b71dc0a",
+		"name": "Batch13",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22412782"
+	},
+	"item": [
+		{
+			"name": "Create Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"pm.environment.set('Id', jsonData.bookingid)",
+							"pm.environment.set('TotalPrice', jsonData.booking.totalprice)",
+							"",
+							"var statuscode = responseCode.code;",
+							"console.log(statuscode)",
+							"",
+							"",
+							"switch(statuscode){",
+							"    case 200:",
+							"    pm.test(\"Status code matched 200\", () => {",
+							"    });",
+							"",
+							"    pm.test(\"Id Check\",  () => {",
+							"        pm.expect(jsonData.bookingid).to.eql(pm.environment.get(\"Id\"));",
+							"        console.log(jsonData.bookingid)",
+							"    });",
+							"",
+							"    pm.test(\"First Name Check\",  () => {",
+							"        pm.expect(jsonData.booking.firstname).to.eql(pm.environment.get(\"firstname\"));",
+							"        console.log(jsonData.booking.firstname)",
+							"    });",
+							"",
+							"    pm.test(\"Last Name Check\",  () => {",
+							"        pm.expect(jsonData.booking.lastname).to.eql(pm.environment.get(\"lastname\"));",
+							"        console.log(jsonData.booking.lastname)",
+							"    });",
+							"",
+							"    pm.test(\"Totalprice Check\",  () => {",
+							"        pm.expect(jsonData.booking.totalprice).to.eql(pm.environment.get(\"TotalPrice\"));",
+							"        console.log(jsonData.booking.totalprice)",
+							"    });",
+							"",
+							"    pm.test(\"Deposit Paid Check\",  () => {",
+							"        pm.expect(jsonData.booking.depositpaid).to.eql(true);",
+							"        console.log(jsonData.booking.depositpaid)",
+							"    });",
+							"",
+							"    pm.test(\"Checkin Check\",  () => {",
+							"        pm.expect(jsonData.booking.bookingdates.checkin).to.eql(pm.environment.get(\"CheckIn\"));",
+							"        console.log(jsonData.booking.bookingdates.checkin)",
+							"    });",
+							"",
+							"    pm.test(\"Checkout Check\",  () => {",
+							"        pm.expect(jsonData.booking.bookingdates.checkout).to.eql(pm.environment.get(\"CheckOut\"));",
+							"        console.log(jsonData.booking.bookingdates.checkout)",
+							"    });",
+							"",
+							"     pm.test(\"Additional Needs Check\",  () => {",
+							"        pm.expect(jsonData.booking.additionalneeds).to.eql(\"Lunch\");",
+							"        console.log(jsonData.booking.additionalneeds)",
+							"    });",
+							"",
+							"    break;",
+							"",
+							"    default:",
+							"    pm.test(\"Status code Not Valid or Unknown\", () => {",
+							"    });",
+							"}",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const moment = require ('moment')",
+							"const today = moment()",
+							"pm.environment.set('CheckIn',today.add(0,'day').format(\"YYYY-MM-DD\"));",
+							"pm.environment.set('CheckOut',today.add(5,'day').format(\"YYYY-MM-DD\"));",
+							"",
+							"let FirstName = pm.variables.replaceIn(\"{{$randomFirstName}}\")",
+							"pm.environment.set(\"firstname\",FirstName)",
+							"",
+							"let LastName = pm.variables.replaceIn(\"{{$randomLastName}}\")",
+							"pm.environment.set(\"lastname\",LastName)",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstname\" : \"{{firstname}}\",\n\t\"lastname\" : \"{{lastname}}\",\n\t\"totalprice\" : \"{{$randomInt}}\",\n\t\"depositpaid\" : true,\n\t\"bookingdates\" : {\n    \t\"checkin\" : \"{{CheckIn}}\",\n    \t\"checkout\" : \"{{CheckOut}}\"\n\t},\n\t\"additionalneeds\" : \"Lunch\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/booking/",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"booking",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show Data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/booking/{{Id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"booking",
+						"{{Id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.environment.set('accesstoken',jsonData.token)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"admin\",\n\t\"password\": \"password123\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/auth",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Data",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{accesstoken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstname\" : \"Shady\",\n\t\"lastname\" : \"Imu\",\n\t\"totalprice\" : 500,\n\t\"depositpaid\" : true,\n\t\"bookingdates\" : {\n    \t\"checkin\" : \"2018-01-01\",\n    \t\"checkout\" : \"2019-01-01\"\n\t},\n\t\"additionalneeds\" : \"Dinner\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/booking/{{Id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"booking",
+						"{{Id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Data",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{accesstoken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/booking/{{Id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"booking",
+						"{{Id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
