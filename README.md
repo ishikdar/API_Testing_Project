@@ -9,3 +9,4 @@ Summary,
 5. Get Random firstname, lastname, integer value.
 6. Auto generate date.
 7. Data validation check, e.t.c
+8. Newman HTML & HTML Extra Report
